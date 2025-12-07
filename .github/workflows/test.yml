@@ -15,12 +15,34 @@ jobs:
 
     steps:
       - name: Setup repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Install Shopware CLI
         uses: ./.
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Test binary
+        run: shopware-cli --version
+
+      - name: Clone FroshTools
+        run: git clone https://github.com/FriendsOfShopware/FroshTools.git
+
+      - name: Zip FroshTools
+        run: shopware-cli extension zip FroshTools
+
+      - name: Validate
+        run: shopware-cli extension validate FroshTools-*.zip
+
+  test-specific-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v6
+
+      - name: Install Shopware CLI
+        uses: ./
+        with:
+          version: "0.7.1"
 
       - name: Test binary
         run: shopware-cli --version
